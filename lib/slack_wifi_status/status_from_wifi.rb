@@ -1,23 +1,26 @@
 module SlackWifiStatus
   class StatusFromWifi
+    def self.wifissid
+      @wifissid ||= `/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I | awk '/ SSID/ {print substr($0, index($0, $2))}'`.chomp
+    end
+
     def self.ssid
-      @ssid ||= `/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I | awk '/ SSID/ {print substr($0, index($0, $2))}'`.chomp
+      ssids[0].each do |value|
+        if value.split(',')[0] == (wifissid)
+          return value.split(',').drop(1)
+        end
+      end
+      return ssids[1].first.split ',',2
     end
 
-    def self.home_ssid?
-      home_ssids.include?(ssid)
-    end
-
-    def self.home_ssids
-      SlackWifiStatus::Config.config['home_ssids']
+    def self.ssids
+      return SlackWifiStatus::Config.config['ssids'], SlackWifiStatus::Config.config['unknown']
     end
 
     def self.status_hash
-      if ssid.empty? || home_ssid?
-        { message: 'At Home', emoji: ':house_with_garden:' }
-      else
-        { message: 'At a coffee shop', emoji: ':coffee:' }
-      end
+      message, emoji = ssid
+
+      return { message: (message), emoji: (emoji) }
     end
 
     def self.set_status
