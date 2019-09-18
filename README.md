@@ -12,54 +12,49 @@ If you are using an SSID not on the list, then your status is set to
 
 ## Setup
 
-To setup, you'll need an OAUTH key for Slack and a list of SSIDs that count as being at home ([kinda detailed OAuth setup instructions](#detailed-oauth-instructions)).
+### Retrieve Slack API token
+- Navigate to https://api.slack.com/custom-integrations/legacy-tokens
+- Press the "create token" button for Team iCapps
+- Confirm with your password
+- The token should be available now. Copy for later ue
 
-clone the repo:
+### Setup script
+- Clone the Ruby scripts from this repo. 
+- Save it for example in your `~/Applications` folder.
+- Navigate to the `~/Applications/slack-wifi-status/config/slack.yml` file.
 
-```
-git clone https://github.com/spatten/slack-wifi-status.git
-```
-Install the required gems:
-
-```
-cd slack-wifi-status
-bundle install
-```
-
-Create a file in `config/slack.yml` that looks like this:
-
-```yaml
----
-oauth_key: "xoxp-this-is-a-totally-real-oauth-key"
-home_ssids:
-  - Pretty Fly for a Wi-Fi
-  - FBI Surveillance Van 119871
-  - TellMyWiFiLoveHer
-```
-
-You can test your setup by running
+- You'll see the config like below:
 
 ```
-./bin/update-slack-status
+oauth_key: "your-slack-oauth-key"
+ssids:
+  - "iCapps,@icapps,:icapps:"
+  - "iCapps Corda,@Corda,:corda:"
+  - "Farmboy Co-working,@icapps Gent,:gent:"
+  - "iCapps Mechelen,@icapps Mechelen ,:mechelen:"
+  - "CRONOS Guest,@Cronos,:cronos:"
+  - "Your home ssid,@home,:house_with_garden:"
+unknown:
+  - "Working in an unknown environment,:zap:"
 ```
 
-It should update your status on Slack.
+- Fill in the API token that you generated in the first step.
+- The 'ssids' section is a list of all SSID names, linked with a description and emoji; you can add as many items as you want (wink).
+- Save your changes and close the file.
 
-## Automatically updating your status
+### Schedule the script
 
-Setup a cron job that runs every five minutes and runs `bin/update-slack-status`, like this:
+- Open terminal
+- Type the following: `crontab -e`
+- Type the following: `i`
+- Paste the following: (if you didn't unzip into the Applications folder, make sure the path below is correct)
+`*/5 * * * * cd ~/Applications/slack-wifi-status && ./bin/update-slack-status > /dev/null 2> /dev/null`
+=> this will schedule the script to run every 5 minutes (change de '5' at the start of the line if you want to run the script less frequent)
+- Press the `esc` button
+- Type the following: `:wq`
 
-```
-*/5 * * * * cd /Users/yourname/path/to/code/slack-wifi-status && ./bin/update-slack-status > /dev/null 2> /dev/null
-```
+It's done! The script should run automatically. You can confirm this by opening terminal and typing `crontab -l`
 
-## Detailed OAuth instructions
+If you received an error "bad day of week" when saving the crontab, please try the following:
 
-Go to https://api.slack.com/apps
-
-Create a new app for the organization you're going to be changing your status on.
-
-You need to set the permissions needed. You need `users.profile:read` and `users.profile:write`.
-
-Slack will then give you an OAuth access token. Copy it and stick it in `config/slack.yml`.
-
+`0,5,10,15,20,25,30,35,40,45,50,55 * * * * cd ~/Applications/slack-wifi-status && ./bin/update-slack-status > /dev/null 2> /dev/null`
