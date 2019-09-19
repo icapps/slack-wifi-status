@@ -3,8 +3,7 @@ ssids:
   - "iCapps,@icapps,:icapps:"
   - "iCapps Corda,@Corda,:corda:"
   - "Farmboy Co-working,@icapps Gent,:gent:"
-  - "CRONOS Wifi,,@icapps Mechelen ,:mechelen:"
+  - "CRONOS Wifi,@icapps Mechelen ,:mechelen:"
   - "CRONOS Guest,@Cronos,:cronos:"
-  - "Your home ssid,@home,:house_with_garden:"
 unknown:
   - "Working in an unknown environment,:zap:"
